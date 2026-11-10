@@ -24,6 +24,25 @@ jobs:
       - name: Build, test and lint Android
         working-directory: android
         run: ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon
+      - name: Build signed release APK
+        if: startsWith(github.ref, 'refs/tags/v')
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/sms-bridge-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${ANDROID_KEYSTORE_BASE64:?Missing release keystore}"
+          : "${ANDROID_KEYSTORE_PASSWORD:?Missing keystore password}"
+          : "${ANDROID_KEY_ALIAS:?Missing key alias}"
+          : "${ANDROID_KEY_PASSWORD:?Missing key password}"
+          trap 'rm -f "$ANDROID_KEYSTORE_PATH"' EXIT
+          umask 077
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+          ./gradlew :app:assembleRelease --no-daemon
       - name: Check Python syntax
         run: python3 -m py_compile mac/sms_bridge_server.py
       - name: Package downloads
@@ -31,7 +50,11 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           mkdir -p dist
-          cp android/app/build/outputs/apk/debug/app-debug.apk dist/sms-bridge-test.apk
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            cp android/app/build/outputs/apk/release/app-release.apk dist/sms-bridge-test.apk
+          else
+            cp android/app/build/outputs/apk/debug/app-debug.apk dist/sms-bridge-test.apk
+          fi
           cp mac/sms_bridge_server.py dist/
           cp README.md LICENSE dist/
           (cd dist && zip sms-bridge-mac.zip sms_bridge_server.py README.md LICENSE)
@@ -69,6 +92,6 @@ jobs:
           - sms-bridge-mac.zip：Mac Python 接收端、使用说明和 MIT 协议。
           - SHA256SUMS：下载文件校验值。
 
-          APK 使用 CI 临时 debug 签名，不是稳定签名的生产发行版。不同构建间可能需要卸载旧版再安装，卸载会清除 App 配置。真实验证码请使用 HTTPS 并核验证书指纹。兼容性取决于手机的短信权限和后台限制。
+          APK 使用固定的正式签名密钥，后续版本可覆盖更新。从旧 debug 签名版迁移时需先卸载旧版，卸载会清除 App 配置。真实验证码请使用 HTTPS 并核验证书指纹。兼容性取决于手机的短信权限和后台限制。
           NOTES
           gh release create "$TAG" dist/sms-bridge-test.apk dist/sms-bridge-mac.zip dist/SHA256SUMS --verify-tag --title "SMS Bridge $TAG" --notes-file release-notes.md --prerelease

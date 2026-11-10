@@ -15,7 +15,7 @@ vivo 收到短信 → SMS Bridge App 提取验证码 → 局域网 POST → Mac 
 
 从 [Releases](https://github.com/biyan113/sms-bridge/releases) 下载 `sms-bridge-test.apk` 和 `sms-bridge-mac.zip`。Android 8.0+；Mac 端需要 Python 3 和系统 OpenSSL（生成自签名证书）。
 
-当前为公开测试版：APK 使用 CI 临时 debug 签名。每次 CI 构建的签名可能不同，更新时可能需要卸载旧版；卸载会清除配置。暂未配置生产签名密钥。
+标签发布要求配置固定的正式签名密钥，缺少签名配置时发布会失败。普通 CI 构建仍使用 debug 签名。从旧 debug 版迁移到正式签名版时需先卸载旧版，卸载会清除配置；此后保持相同密钥并递增 versionCode 即可覆盖更新。
 
 ## 一、启动 Mac 接收端
 
@@ -111,6 +111,26 @@ GitHub Actions 使用官方 `actions/setup-java` 和 Gradle `setup-gradle`，Act
 git tag v0.1.0
 git push origin v0.1.0
 ```
+
+### Android 正式签名
+
+本地将 `android/keystore.properties.example` 复制为 `android/keystore.properties`，填写现有正式密钥的路径、别名和密码，然后执行：
+
+```bash
+cd android
+./gradlew :app:assembleRelease
+```
+
+正式 APK 输出到 `android/app/build/outputs/apk/release/app-release.apk`。密钥和密码文件已被 Git 忽略，请单独安全备份并在后续版本沿用同一密钥。
+
+GitHub 标签发布需要在仓库 Actions Secrets 中配置：
+
+- `ANDROID_KEYSTORE_BASE64`：正式 keystore 文件的 Base64 内容。
+- `ANDROID_KEYSTORE_PASSWORD`：keystore 密码。
+- `ANDROID_KEY_ALIAS`：签名密钥别名。
+- `ANDROID_KEY_PASSWORD`：签名密钥密码。
+
+CI 解码到临时文件，完成后删除。也可通过 `ANDROID_KEYSTORE_PATH`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 环境变量在本地构建，优先于 properties 文件。
 
 后续发布前请同步修改 `android/app/build.gradle.kts` 的 `versionCode` / `versionName`，并更新 CHANGELOG。
 
