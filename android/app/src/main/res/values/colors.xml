@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#F5F6FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="ink">#192238</color>
+    <color name="muted">#788295</color>
+    <color name="line">#E8EBF2</color>
+    <color name="wire">#4263EB</color>
+    <color name="wire_pressed">#3451CE</color>
+    <color name="ok_bg">#E4F4F0</color>
+    <color name="ok_fg">#0C6B5C</color>
+    <color name="bad_bg">#FBEAEA</color>
+    <color name="bad_fg">#9E2B22</color>
+    <color name="warn_bg">#F8F1DE</color>
+    <color name="warn_fg">#7A5410</color>
+    <color name="idle_bg">#F0F2F7</color>
+    <color name="idle_fg">#788295</color>
+</resources>

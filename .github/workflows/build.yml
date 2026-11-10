@@ -1,0 +1,74 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@4c125117fe7c5aed11272ec4213f602f012f89f2 # v5
+      - name: Build, test and lint Android
+        working-directory: android
+        run: ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon
+      - name: Check Python syntax
+        run: python3 -m py_compile mac/sms_bridge_server.py
+      - name: Package downloads
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist/sms-bridge-test.apk
+          cp mac/sms_bridge_server.py dist/
+          cp README.md LICENSE dist/
+          (cd dist && zip sms-bridge-mac.zip sms_bridge_server.py README.md LICENSE)
+          (cd dist && sha256sum sms-bridge-test.apk sms-bridge-mac.zip > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sms-bridge
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run download "$RUN_ID" --name sms-bridge --dir dist
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cat > release-notes.md <<'NOTES'
+          Android 短信验证码同步到 Mac 的首个公开测试版。
+
+          - sms-bridge-test.apk：可安装的 Android 测试版（Android 8+）。
+          - sms-bridge-mac.zip：Mac Python 接收端、使用说明和 MIT 协议。
+          - SHA256SUMS：下载文件校验值。
+
+          APK 使用 CI 临时 debug 签名，不是稳定签名的生产发行版。不同构建间可能需要卸载旧版再安装，卸载会清除 App 配置。真实验证码请使用 HTTPS 并核验证书指纹。兼容性取决于手机的短信权限和后台限制。
+          NOTES
+          gh release create "$TAG" dist/sms-bridge-test.apk dist/sms-bridge-mac.zip dist/SHA256SUMS --verify-tag --title "SMS Bridge $TAG" --notes-file release-notes.md --prerelease

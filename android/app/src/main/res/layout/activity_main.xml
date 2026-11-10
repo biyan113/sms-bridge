@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="36dp">
+
+        <TextView
+            style="@style/Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="短信桥" />
+
+        <TextView
+            style="@style/Sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="SMS Bridge · 让验证码，触手可及" />
+
+        <TextView
+            android:id="@+id/permissionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textColor="@color/muted"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/permissionButton"
+            style="@style/BtnPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="打开短信权限" />
+
+        <LinearLayout
+            android:id="@+id/ticket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_ticket"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/Section"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="最近短信" />
+
+                    <Button
+                        android:id="@+id/clearButton"
+                        style="@style/TextBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="清空" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ticketTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/ticketCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.08"
+                    android:textColor="@color/ink"
+                    android:textSize="40sp" />
+
+                <TextView
+                    android:id="@+id/ticketMeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/muted"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipSms"
+                        style="@style/Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/chipCode"
+                        style="@style/Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" />
+
+                    <TextView
+                        android:id="@+id/chipSend"
+                        style="@style/Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" android:padding="20dp" android:background="@drawable/bg_ticket" android:orientation="vertical">
+            <Button android:id="@+id/settingsToggle" style="@style/TextBtn" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="start|center_vertical" android:textColor="@color/ink" android:textSize="17sp" android:text="连接设置　＋" />
+            <TextView android:id="@+id/connectionSummary" style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="设置 Mac 地址，开始同步" />
+            <LinearLayout android:id="@+id/settingsPanel" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Mac 地址" />
+
+        <EditText
+            android:id="@+id/urlInput"
+            style="@style/Field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="https://192.168.1.8:8765"
+            android:inputType="textUri" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Token" />
+
+        <EditText
+            android:id="@+id/tokenInput"
+            style="@style/Field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="monospace"
+            android:hint="与 Mac 接收端一致"
+            android:inputType="textPassword" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="证书指纹" />
+
+        <EditText
+            android:id="@+id/fingerprintInput"
+            style="@style/Field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="monospace"
+            android:hint="用 https 时填写，否则留空"
+            android:inputType="textVisiblePassword"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/saveButton"
+                style="@style/BtnQuiet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="保存" />
+
+            <Button
+                android:id="@+id/testButton"
+                style="@style/BtnPrimary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.4"
+                android:text="测试连接" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/testResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/muted"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+            </LinearLayout>
+        </LinearLayout>
+        <TextView style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="24dp" android:textSize="12sp" android:text="手机收到 · 自动识别 · 同步到 Mac" />
+        <TextView
+            android:id="@+id/earlierTitle"
+            style="@style/Section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="更早"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/earlierList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>
