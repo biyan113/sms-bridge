@@ -56,8 +56,8 @@ jobs:
             cp android/app/build/outputs/apk/debug/app-debug.apk dist/sms-bridge-test.apk
           fi
           cp mac/sms_bridge_server.py dist/
-          cp README.md LICENSE dist/
-          (cd dist && zip sms-bridge-mac.zip sms_bridge_server.py README.md LICENSE)
+          cp README.md README.zh-CN.md LICENSE dist/
+          (cd dist && zip sms-bridge-mac.zip sms_bridge_server.py README.md README.zh-CN.md LICENSE)
           (cd dist && sha256sum sms-bridge-test.apk sms-bridge-mac.zip > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
